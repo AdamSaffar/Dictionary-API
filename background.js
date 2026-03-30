@@ -9,11 +9,24 @@ function isJson(fetchedResponse) {
 } 
 
 function dataStructure(returnData) {
-  const word = returnData.word; 
-  let def = [];
-  for(let i = 0; i < returnData)
+  // use ??(Nullish COalescing Op) as safety net
+  const word = returnData?.word;
+  if (!word) {
+    word = "Word not found!"
+    return;
+  }
+  const pronounce = returnData?.phonetics[0].text;
+  const audioRecording = returnData?.phonetics[0].audio;
+  let definitions = [];
+  const lengthOfMeaning = returnData.meanings.length; 
+  for(let i = 0; i <= lengthOfMeaning; i++) {
+    definitions.push(returnData.meanings[i].definitions.definition);
+  }
 
   return {
+    word,
+    pronounce,
+    audioRecording,
 
   }
 }
