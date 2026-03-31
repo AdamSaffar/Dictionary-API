@@ -1,3 +1,5 @@
+let currentSelection = "";
+/*
 function isJson(fetchedResponse) {
   try {
     JSON.parse(fetchedResponse);
@@ -7,27 +9,37 @@ function isJson(fetchedResponse) {
     return false;
   }
 } 
-
-function dataStructure(returnData) {
-  // use ??(Nullish COalescing Op) as safety net
-  const word = returnData?.word;
+*/ 
+function dataStructure(data) {
+  // use ??(Nullish Coalescing Op) as safety net
+  let word = data?.word;
   if (!word) {
-    word = "Word not found!"
-    return;
+    return {
+      error: true, 
+      message: "Word not found!"
+    };
   }
-  const pronounce = returnData?.phonetics[0].text;
-  const audioRecording = returnData?.phonetics[0].audio;
-  let definitions = [];
-  const lengthOfMeaning = returnData.meanings.length; 
-  for(let i = 0; i <= lengthOfMeaning; i++) {
-    definitions.push(returnData.meanings[i].definitions.definition);
-  }
+  const pronounce = data?.phonetics[0]?.text ?? "";
+  const audioRecording = data?.phonetics[0].audio ?? null;
+  const origin = data?.origin ?? ""; 
+
+  // All data obtained through "meanings" property
+  const meanings = data.meanings?.flatMap(m => 
+    m.definitions.map(d => ({
+      partOfSpeech: m.partOfSpeech, // pull 'partOfSpeech' from parent m
+      definition: d.definition, 
+      example: d.example,
+      synonyms: d.synonyms
+    }))
+  ) ?? [];
 
   return {
+    error: false, 
     word,
     pronounce,
     audioRecording,
-
+    origin, 
+    meanings
   }
 }
 chrome.sidePanel
@@ -56,7 +68,7 @@ chrome.runtime.onInstalled.addListener(() => {
   });
 });
 
-chrome.runtime.onMessage.addListener(async(message, sender, sendResponse) => {
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   if(message.type === "UPDATE_MENU_TITLE") {
     const updatedTitle = message.reset ? "Select text to define!" : `Define: "${message.newTitle}"`;
     chrome.contextMenus.update("openSidePanelForSelection", {
@@ -65,25 +77,25 @@ chrome.runtime.onMessage.addListener(async(message, sender, sendResponse) => {
   }
   if(message.data) {
     currentSelection = message.data;
+  }
+});
+
+chrome.contextMenus.onClicked.addListener(async (info, tab) => {
+  if(info.menuItemId === "openSidePanelForSelection") {     
+    chrome.sidePanel.open({tabId: tab.id});
+  }
+  const wordToDefine = currentSelection;
+  if(wordToDefine) {
     try {
-      const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${currentSelection}`);
-      const returnData = await response.json();
-      console.log("It is JSON:",returnData);
-      if(Array.isArray(returnData)) {
-        console.log(returnData[0].meanings[0].definitions[0].definition); 
-      } else {
-        console.log("Word not found!");
-      }
+      const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${wordToDefine}`);
+      const data = await response.json();
+      console.log("It is JSON:",data);
+      
+      const finalizedData = dataStructure(data);
     } catch(error) {
       console.error(error.messsage);
     }
   }
   // Retrn True to keep message channel open for async
   return true;
-});
-
-chrome.contextMenus.onClicked.addListener((info, tab) => {
-  if(info.menuItemId === "openSidePanelForSelection") {     
-    chrome.sidePanel.open({tabId: tab.id});
-  }
 });
