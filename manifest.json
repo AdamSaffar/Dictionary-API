@@ -16,7 +16,7 @@
     "js": ["content.js"],
     "css": ["css/styles.css"]
   }],
-  "permissions": ["sidePanel", "contextMenus"],
+  "permissions": ["storage","sidePanel", "contextMenus"],
   "side_panel": {
     "default_path": "sidepanel.html"
   },

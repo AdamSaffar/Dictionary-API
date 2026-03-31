@@ -11,6 +11,9 @@ function isJson(fetchedResponse) {
 } 
 */ 
 function dataStructure(data) {
+  if (Array.isArray(data)) {
+    data = data[0]; 
+  }
   // use ??(Nullish Coalescing Op) as safety net
   let word = data?.word;
   if (!word) {
@@ -19,25 +22,26 @@ function dataStructure(data) {
       message: "Word not found!"
     };
   }
-  const pronounce = data?.phonetics[0]?.text ?? "";
-  const audioRecording = data?.phonetics[0].audio ?? null;
+  const phonetics = data.phonetics?.filter(m => m.text && m.audio).map(m => ({
+    pronounce: m.text, 
+    audioRec: m.audio
+  })) ?? [];
   const origin = data?.origin ?? ""; 
 
   // All data obtained through "meanings" property
   const meanings = data.meanings?.flatMap(m => 
     m.definitions.map(d => ({
-      partOfSpeech: m.partOfSpeech, // pull 'partOfSpeech' from parent m
-      definition: d.definition, 
-      example: d.example,
-      synonyms: d.synonyms
+      partOfSpeech: m.partOfSpeech ?? "", // pull 'partOfSpeech' from parent m
+      definition: d.definition ?? "", 
+      example: d.example ?? "",
+      synonyms: d.synonyms ?? ""
     }))
   ) ?? [];
 
   return {
     error: false, 
     word,
-    pronounce,
-    audioRecording,
+    phonetics,
     origin, 
     meanings
   }
@@ -92,6 +96,8 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
       console.log("It is JSON:",data);
       
       const finalizedData = dataStructure(data);
+      await chrome.storage.session.set({dictionaryData: finalizedData});
+      
     } catch(error) {
       console.error(error.messsage);
     }
