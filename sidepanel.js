@@ -2,8 +2,10 @@
 
 const wordText = document.getElementById("word-text");
 const pronounceContainer = document.getElementById("pronounce-container");
+const pronounceText = document.getElementById("pronounce-text");
 const definitonContainer = document.getElementById("definition-container");
 const originContainer = document.getElementById("origin-container");
+const originText = document.getElementById("origin-text");
 let currentAudioUrl = null;
 const audioButton = document.querySelector('.audio-bttn');
 audioButton.addEventListener("click", () => {
@@ -21,16 +23,26 @@ function updateUI(data) {
     audioButton.style.display = "none"; // hide button
     return;
   }
-  clearOldValues(pronounceContainer, originContainer, definitonContainer);
+  clearOldValues(pronounceText, originText, definitonContainer);
 
   // set main word
   wordText.innerText = data.word;
 
   // set new pronounciation text
-  pronounceContainer.innerText = data.phonetics?.[0]?.pronounce;
-  // set new origin text
-  originContainer.innerText = data.origin;
+  if(data.phonetics?.[0]?.pronounce) {
+    pronounceContainer.style.display = "block";
+    pronounceText.innerText = data.phonetics[0]?.pronounce;
+  } else {
+    pronounceContainer.style.display = "none";
+  }
 
+  // set new origin text
+  if(data.origin) {
+    originContainer.style.display = "block";
+    originText.innerHTML = `Origin: ${data.origin}`;
+  } else {
+    originContainer.style.display = "none";
+  }
   // set new audio
   if(data.phonetics?.[0]?.audioRec) {
     currentAudioUrl = data.phonetics[0].audioRec;
@@ -55,12 +67,13 @@ function updateUI(data) {
 }
 
 // clear out old data values
-function clearOldValues(pronounceContainer, originContainer, definitonContainer) {
-  pronounceContainer.innerText = "";
-  originContainer.innerText = "";
+function clearOldValues(pronounceText, originText, definitonContainer) {
+  pronounceText.innerText = "";
+  originText.innerText = "";
   currentAudioUrl = null; 
   definitonContainer.innerText = "";
 }
+
 // When panel first opens, grab whatever is currently in storage
 chrome.storage.session.get("dictionaryData", (result) => {
   if(result.dictionaryData) {

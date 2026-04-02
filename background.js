@@ -10,6 +10,11 @@ function isJson(fetchedResponse) {
   }
 } 
 */ 
+// refine syllable finder logic so it accuarately puts a delimiter between each syllable
+function syllableFinder(text) {
+  return text.replace(/([aeiou])/gi, "$1·");
+}
+
 function dataStructure(data) {
   if (Array.isArray(data)) {
     data = data[0]; 
