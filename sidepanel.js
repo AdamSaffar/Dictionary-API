@@ -1,12 +1,11 @@
 //const { createElement } = require("react");
 
-const wordHeader = document.getElementById("word-header");
+const wordText = document.getElementById("word-text");
 const pronounceContainer = document.getElementById("pronounce-container");
-const audioButton = document.getElementById("audio-bttn");
-const originContainer = document.getElementById("origin-container");
 const definitonContainer = document.getElementById("definition-container");
+const originContainer = document.getElementById("origin-container");
 let currentAudioUrl = null;
-
+const audioButton = document.querySelector('.audio-bttn');
 audioButton.addEventListener("click", () => {
   if(currentAudioUrl) {
     const player = new Audio(currentAudioUrl);
@@ -17,28 +16,28 @@ audioButton.addEventListener("click", () => {
 });
 function updateUI(data) {
   if(data.error) {
-    wordHeader.innerText = data.message;
+    wordText.innerText = data.message;
     definitonContainer.innerText = "";
+    audioButton.style.display = "none"; // hide button
     return;
   }
-  // set main word
-  wordHeader.innerText = data.word;
+  clearOldValues(pronounceContainer, originContainer, definitonContainer);
 
-  // clear out old pronounciation text
-  pronounceContainer.innerText = "";
+  // set main word
+  wordText.innerText = data.word;
+
   // set new pronounciation text
-  pronounceContainer.innerText = data.phonetics[0].pronounce;
-  // clear out old origin text
-  originContainer.innerText = "";
+  pronounceContainer.innerText = data.phonetics?.[0]?.pronounce;
   // set new origin text
   originContainer.innerText = data.origin;
-  // clear out old audio
-  currentAudioUrl = null; 
-  // set new audio
-  currentAudioUrl = data.phonetics[0].audioRec;
 
-  // clear out old definitions
-  definitonContainer.innerText = "";
+  // set new audio
+  if(data.phonetics?.[0]?.audioRec) {
+    currentAudioUrl = data.phonetics[0].audioRec;
+    audioButton.style.display = "inline-block"; // reveal audio if available
+  } else {
+    audioButton.style.display = "none";
+  }
 
   data.meanings.forEach((m) => {
     const newDiv = document.createElement("div");
@@ -47,16 +46,20 @@ function updateUI(data) {
     newDiv.innerHTML = `
       <strong>${m.partOfSpeech}</strong>
       <p>${m.definition}</p>
-      <p>${m.example}</p> 
-      <p>${m.synonyms}</p>
+      ${m.example ? `<p>Example: ${m.example}</p>` : ""}
+      ${m.synonyms && m.synonyms.length > 0 ? `<p>Synonym: ${m.synonyms}` : ""}
     `;
 
     definitonContainer.appendChild(newDiv);
   });
 }
 
-function clearOldValues() {
-  
+// clear out old data values
+function clearOldValues(pronounceContainer, originContainer, definitonContainer) {
+  pronounceContainer.innerText = "";
+  originContainer.innerText = "";
+  currentAudioUrl = null; 
+  definitonContainer.innerText = "";
 }
 // When panel first opens, grab whatever is currently in storage
 chrome.storage.session.get("dictionaryData", (result) => {

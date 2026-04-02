@@ -1,3 +1,29 @@
-.main-container {
-  
+.audio-bttn {
+  cursor: pointer;
+  position: relative;
+
+  background-image: url("/icons/speaker-filled-audio-tool.png");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: 70%;
+
+  width: 36px;
+  height: 36px;
+  border-radius: 100%; 
+
+
+  border-color: #8ab4f8;
+  background-color: #8ab4f8;
+
+}
+
+#word-header {
+  gap: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+#word-text {
+  font-family: Arial, Helvetica, sans-serif;
 }

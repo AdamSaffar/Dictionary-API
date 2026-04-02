@@ -1,11 +1,19 @@
 <!DOCTYPE html>
 <html>
-  <head>My Sidepanel</head>
+  <head>
+    <title>My sidepanel</title>
+      <link rel="stylesheet" href="css/styles.css">
+      <link rel="stylesheet" href="css/hover/hover-button.css">
+  </head>
   <body>
-    <h1 id = "word-header">Select a word...</h1>
+    <h1 id = "word-header">
+      <button class = "audio-bttn" style = "display: none;">
+        <div class = "audio-tooltip">Play audio!</div>
+      </button>
+      <span id = "word-text">Select a word to define...</span>
+    </h1>
     <div>
     <span id = "pronounce-container"></span>
-      <button id = "audio-bttn">Play Audio!</button>
     </div>
     <p id = "origin-container"></p>
     <div id = "definition-container"></div>
