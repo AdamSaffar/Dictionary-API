@@ -53,10 +53,9 @@ function updateUI(data) {
 
   data.meanings.forEach((m) => {
     const newDiv = document.createElement("div");
-    newDiv.classList.add("main-definiton-container");
+    newDiv.classList.add("main-definiton-group");
     
     newDiv.innerHTML = `
-      <strong>${m.partOfSpeech}</strong>
       <p>${m.definition}</p>
       ${m.example ? `<p>Example: ${m.example}</p>` : ""}
       ${m.synonyms && m.synonyms.length > 0 ? `<p>Synonym: ${m.synonyms}` : ""}

@@ -32,3 +32,8 @@
   font-family:sans-serif;
   font-weight: bold;
 }
+
+
+.synonym-text:hover {
+  background-color: rgb(160, 197, 218);
+}

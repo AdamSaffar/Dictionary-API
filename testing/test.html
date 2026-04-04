@@ -1,5 +1,47 @@
 <!DOCTYPE html>
 <html>
-  <body> Testing, Hello world! </body>
-  <script src = "main.js"></script>
+  <head>
+    <title>My sidepanel</title>
+      <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+      <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@200;300;400;500;700&display=swap" rel="stylesheet">
+      <link rel="stylesheet" href="/css/styles.css">
+      <link rel="stylesheet" href="/css/hover/hover-button.css">
+  </head>
+  <body>
+    <div class = "header-container">
+      <button class = "audio-bttn">
+        <div class = "audio-tooltip">Play audio!</div>
+      </button>
+      
+      <div class = "word-group">
+        <h1 id = "word-text">hello</h1>
+          <span id = "pronounce-text">hɛˈləʊ</span>
+      </div>
+    </div>
+
+    <div id = "origin-container">
+      <div id = "origin-label">Origin:</div>
+      <div id = "origin-text">
+        early 19th century: variant of earlier hollo ; related to holla.
+      </div>
+    </div>
+
+    <div class = "word-main-container"> 
+      <h2 id = "partOfSpeech">exclamation</h2>
+      <div class = "definition-container">
+        <p id = "definiton-text">used as a greeting or to begin a phone conversation.</p>
+        <p id = "example-text">"hello there, Katie!"</p>
+        <div class = "synonym-row">
+          <span class = "similar-label">
+            Similar: 
+          </span>
+          <button class = "synonym-text">Hi</button>
+          <button class = "synonym-text">Howdy</button>
+          <button class = "synonym-text">Hey</button>
+        </div>
+      </div>
+    </div>
+    
+    <script src = "sidepanel.js"> </script>
+  </body>
 </html>
