@@ -27,11 +27,18 @@ function dataStructure(data) {
       message: "Word not found!"
     };
   }
+  const pronunciation = data?.phonetic ?? "";
+  const audioRec = data?.phonetics?.filter(m => m.audio).map(a => {
+    return a.audio; 
+  }) ?? [];
+
+  /*
   const phonetics = data.phonetics?.filter(m => m.text && m.audio).map(m => ({
     pronounce: m.text, 
     audioRec: m.audio
   })) ?? [];
-  const origin = data?.origin ?? ""; 
+  */
+  const origin = data?.origin;
 
   // All data obtained through "meanings" property
   const meanings = data.meanings?.flatMap(m => 
@@ -46,7 +53,8 @@ function dataStructure(data) {
   return {
     error: false, 
     word,
-    phonetics,
+    pronunciation,
+    audioRec,
     origin, 
     meanings
   }
@@ -98,8 +106,7 @@ chrome.contextMenus.onClicked.addListener(async (info, tab) => {
     try {
       const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${wordToDefine}`);
       const data = await response.json();
-      console.log("It is JSON:",data);
-      
+      console.log(data);
       const finalizedData = dataStructure(data);
       await chrome.storage.session.set({dictionaryData: finalizedData});
       

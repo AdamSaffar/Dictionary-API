@@ -2,23 +2,33 @@
 <html>
   <head>
     <title>My sidepanel</title>
-      <link rel="stylesheet" href="css/styles.css">
-      <link rel="stylesheet" href="css/hover/hover-button.css">
+      <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+      <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@200;300;400;500;700&display=swap" rel="stylesheet">
+      <link rel="stylesheet" href="/css/styles.css">
+      <link rel="stylesheet" href="/css/hover/hover-button.css">
   </head>
   <body>
-    <h1 id = "word-header">
+    <div class = "header-container">
       <button class = "audio-bttn" style = "display: none;">
         <div class = "audio-tooltip">Play audio!</div>
       </button>
-      <span id = "word-text">Select a word to define...</span>
-    </h1>
-    <div id = "pronounce-container" style = "display: none;">
-      <span id = "pronounce-text"></span>
+      
+      <div class = "word-group">
+        <h1 id = "word-text"></h1>
+          <span id = "pronounce-text" style = "display: none;"></span>
+      </div>
     </div>
-    <p id = "origin-container" style = "display: none;">
-      <span id = "origin-text"></span>
-    </p>
-    <div id = "definition-container"></div>
+
+    <div id = "origin-container" style = "display: none;">
+      <div id = "origin-label">Origin:</div>
+      <div id = "origin-text">
+      </div>
+    </div>
+
+    <div class = "word-main-container"> 
+      <div class = "definition-container">
+      </div>
+    </div>
     
     <script src = "sidepanel.js"> </script>
   </body>
