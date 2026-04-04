@@ -97,23 +97,36 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 });
 
-chrome.contextMenus.onClicked.addListener(async (info, tab) => {
-  if(info.menuItemId === "openSidePanelForSelection") {     
-    chrome.sidePanel.open({tabId: tab.id});
-  }
-  const wordToDefine = currentSelection;
-  if(wordToDefine) {
-    try {
-      const response = await fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${wordToDefine}`);
-      const data = await response.json();
-      console.log(data);
+async function fetchAndStoreWord(wordToDefine) {
+  if(!wordToDefine) return;
+  fetch(`https://api.dictionaryapi.dev/api/v2/entries/en/${wordToDefine}`)
+    .then(response => {
+      //if(!response.ok) throw new Error("Word not found");
+      return response.json();
+    })
+    .then(data => {
+      console.log("Fetched data: ", data);
       const finalizedData = dataStructure(data);
-      await chrome.storage.session.set({dictionaryData: finalizedData});
-      
-    } catch(error) {
-      console.error(error.messsage);
-    }
+      chrome.storage.session.set({dictionaryData: finalizedData});
+    })
+    .catch(error => {
+      console.error("Fetch failed: ", error.message);
+    });
+}
+
+chrome.contextMenus.onClicked.addListener(async (info, tab) => {
+  if(info.menuItemId === "openSidePanelForSelection") { 
+    // send id of current tab to side panel to display side-panel    
+    chrome.sidePanel.open({tabId: tab.id});
+    fetchAndStoreWord(currentSelection);
   }
-  // Retrn True to keep message channel open for async
+});
+
+// chrome listner to update sidepanel for selected synonym button
+chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
+  if(message.type === "SEARCH_WORD") {
+    fetchAndStoreWord(message.data);
+  }  
+  // Return true to keep message channel open
   return true;
 });

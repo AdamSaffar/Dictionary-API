@@ -6,8 +6,7 @@ const definitonContainer = document.querySelector('.definition-container');
 const originContainer = document.getElementById("origin-container");
 const originText = document.getElementById("origin-text");
 
-const partOfSpeech = document.getElementById("partOfSpeech");
-
+const headerContainer = document.getElementById('.header-container');
 const wordMainContainer = document.querySelector('.word-main-container');
 let currentAudioUrl = null;
 const audioButton = document.querySelector('.audio-bttn');
@@ -20,11 +19,11 @@ audioButton.addEventListener("click", () => {
   }
 });
 function updateUI(data) {
-  console.log(data);
-  console.log(data.meanings);
+  console.log("Structred Data:", data);
   if(data.error) {
+    clearOldValues(wordText, pronounceText, originText, definitonContainer);
+    audioButton.style.display = "none";
     wordText.innerText = data.message;
-    wordMainContainer.innerHTML = "";
     return;
   }
   clearOldValues(wordText, pronounceText, originText, definitonContainer);
@@ -76,6 +75,7 @@ function updateUI(data) {
     
     if(m?.synonyms && (m.synonyms.length > 0)) {
       const newSynonymDiv = document.createElement("div");
+
       newSynonymDiv.classList.add("synonym-row");
       newSynonymDiv.innerHTML = `
         <span class = "similar-label">
@@ -87,6 +87,14 @@ function updateUI(data) {
         newSynonymDiv.innerHTML += `
          <button class = "synonym-text">${syn}</button>
         `;
+      });
+      newSynonymDiv.addEventListener("click", (event) => {
+        if(event.target.classList.contains("synonym-text")) {
+          const clickedWord = event.target.innerText;
+          console.log("Selected new word: ", clickedWord);
+          const currentWord = data.word;
+          performNewSearch(clickedWord, currentWord);
+        }
       });
       newDefDiv.appendChild(newSynonymDiv);
     }
@@ -103,6 +111,12 @@ function clearOldValues(wordText, pronounceText, originText, definitonContainer)
   definitonContainer.innerHTML = "";
 }
 
+function performNewSearch(newWord, currentWord) {
+  //chrome.local.storage.set({lastWord: currentWord}); 
+  chrome.runtime.sendMessage({type: "SEARCH_WORD", data: newWord});  
+  // scroll back to top of page
+  window.scrollTo(0,0);
+}
 // When panel first opens, grab whatever is currently in storage
 chrome.storage.session.get("dictionaryData", (result) => {
   if(result.dictionaryData) {
